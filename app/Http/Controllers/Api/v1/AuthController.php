@@ -3,25 +3,38 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Traits\HttpResponses;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\SignupRequest;
+use App\Services\Api\v1\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    use HttpResponses;
+    /**
+    * @param AuthService $authService
+    */
+    public function __construct(private AuthService $authService) 
+    {}
 
-    public function login()
+    public function login(LoginRequest $request)
     {
-        return 'This is my login Method';
+        $params = $request->validated();
+        $response = $this->authService->login($params);
+        return $response;
     }
 
-    public function signup()
+    public function signup(SignupRequest $request) : JsonResponse
     {
-        return response()->json('This is my registration method');
+        $request->validated($request->all());
+        $result = $this->authService->signup($request);
+        return $result;
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        return response()->json('This is my logout method');
+        $result = $this->authService->logout($request);
+
+        return $result;
     }
 }
